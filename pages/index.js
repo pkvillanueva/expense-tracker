@@ -1,65 +1,92 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { useCallback } from 'react';
+import styled from '@emotion/styled';
+import useTransactions from '../hooks/useTransactions';
+import { Page, Button, TransactionCard } from '../components';
+import { FiPlus } from 'react-icons/fi';
+import colors from '../lib/colors';
+import dayjs from 'dayjs';
 
-export default function Home() {
+export default function Dashboard() {
+  const { transactions } = useTransactions();
+
+  const getTransactions = useCallback(() => {
+    let data = transactions
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .reverse();
+
+    data = data.reduce((a, b) => {
+      const date = dayjs(b.date);
+      const group = `${date.get('month')}/01/${date.get('year')}`;
+      a[group] = a[group] ? [...a[group], b] : [b];
+      return a;
+    }, {});
+
+    return (
+      <List>
+        {Object.keys(data).map((date) => (
+          <Group key={date}>
+            <GroupDate key={date}>
+              {dayjs(date).format('MMM YYYY')}
+            </GroupDate>
+            <Each>
+              {data[date].map((props) => (
+                <TransactionCard key={props.id} {...props} />
+              ))}
+            </Each>
+          </Group>
+        ))}
+      </List>
+    );
+
+    ;
+  }, [transactions]);
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+    <Page title="Dashboard">
+      <Actions>
+        <Button
+          href="/transactions"
+          leftIcon={<FiPlus />}
+          colorScheme="yellow"
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+          Add Transaction
+        </Button>
+      </Actions>
+      {transactions.length ? getTransactions() : (
+        <Empty>
+          No transactions.
+        </Empty>
+      )}
+    </Page>
+  );
 }
+
+const Actions = styled.div`
+  text-align: right;
+`;
+
+const List = styled.div`
+  margin-top: 2.5rem;
+`;
+
+const Group = styled.div`
+  margin-top: 2.5rem;
+`;
+
+const GroupDate = styled.p`
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${colors.gray500};
+  text-align: left;
+`;
+
+const Each = styled.div`
+  margin-top: 1rem;
+`;
+
+const Empty = styled.div`
+  font-size: 1.25rem;
+  color: ${colors.gray400};
+  text-align: center;
+`;
