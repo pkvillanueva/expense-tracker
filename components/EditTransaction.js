@@ -27,7 +27,7 @@ export default function EditTransaction() {
         <FormItem name="amount" label="Enter amount">
           <Input
             defaultValue={editTransaction.amount}
-            error={errors.amount}
+            error={!!errors.amount}
             type="number"
             {...register('amount', { required: true })}
           />
@@ -38,7 +38,7 @@ export default function EditTransaction() {
         <FormItem name="date" label="Date">
           <Input
             defaultValue={editTransaction.date}
-            error={errors.date}
+            error={!!errors.date}
             type="date"
             {...register('date', { required: true })}
           />
@@ -47,7 +47,7 @@ export default function EditTransaction() {
           <Select
             {...register('category', { required: true })}
             defaultValue={editTransaction.category}
-            error={errors.category}
+            error={!!errors.category}
             options={Object.keys(categories).reduce((acc, cur) => {
               acc.push({ value: cur, label: categories[cur] });
               return acc;
