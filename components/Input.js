@@ -3,7 +3,6 @@ import styled from '@emotion/styled';
 import colors from '../lib/colors';
 
 export default forwardRef(({ type = 'text', ...props }, ref) => {
-  console.log(props);
   return (
     <Input ref={ref} type={type} {...props} />
   );
