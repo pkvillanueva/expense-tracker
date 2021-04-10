@@ -62,7 +62,7 @@ export default function EditTransaction() {
         <RightActions>
           {router.query.id && (
             <Delete>
-              <Button onClick={() => removeTransaction(router.query.id)}>
+              <Button type="button" onClick={() => removeTransaction(router.query.id)}>
                 Delete
               </Button>
             </Delete>
