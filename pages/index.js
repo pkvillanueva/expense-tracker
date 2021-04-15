@@ -86,6 +86,7 @@ const Each = styled.div`
 `;
 
 const Empty = styled.div`
+  margin-top: 1rem;
   font-size: 1.25rem;
   color: ${colors.gray400};
   text-align: center;
